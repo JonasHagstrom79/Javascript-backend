@@ -33,7 +33,7 @@ jsonfile.readFile(file, function(err, obj) {
     }
 });
 
-
+/**
 app.get('/api/courses', function(req, res) {
     
     // For every course in db
@@ -85,16 +85,40 @@ app.get('/api/courses/:courseCode', function(req, res) {
     
 });
 
-/*
-app.get('api/courses/my', function(req, res) {
-    res.send({ "message": "Hello, World!" });
-    //res.send(miundb.myCourses);
-}); */
 
+*/
 app.get('/api/courses/my', function(req, res) { //Funkar inte? HMM?????
-    res.send({ "message": "Hello, World!" });
+    
+    
+    
+    for (course of miundb.myCourses) {
+
+        for (miuncourse of miundb.courses) {
+
+            if (course.courseCode == miuncourse.courseCode) {
+                
+                miuncourse["grade"] == course.grade;
+                course["subjectCode"] = miuncourse.subjectCode;
+                course["level"] = miuncourse.level;
+                course["progression"] = miuncourse.progression;
+                course["name"] = miuncourse.name;
+                course["points"] = miuncourse.points;
+                course["institutionCode"] = miuncourse.institutionCode;
+                
+                for(subject of miundb.subjects) {
+
+                    if (subject.subjectCode == course.subjectCode) {
+                        course["subject"] = subject.subject;
+                    }
+                }
+                //course["grade"] = "empty" //TODO: remove!!
+            };
+            
+        };
+    };
+    //res.send({ "message": "Hello, World!" });
     //res.status(200).json(miundb);
-    res.send(miundb.courses);
+    res.send(miundb.myCourses);
     // en fuling, ta alla miundb och jämför med mina osv :P
 }); 
 
