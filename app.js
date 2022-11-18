@@ -1,6 +1,7 @@
 // Include all needed modules
 const express = require('express');
 const cors = require('cors');
+//var jsonfile2 = require('jsonfile');
 
 
 // Create an Express application
@@ -16,30 +17,23 @@ app.listen(port, function() {
 });
 
 
-
-
-// För att testa
-/** 
-const usersDb = [{
-    id: 3,
-    make: "Audi",
-    model: "R8",
-    color: "Black"
-},
-{
-    id: 4,
-    make: "Volvo",
-    model: "V40",
-    color: "Orange"
-}];
-
-
-
-const car = []; */
-//const obj = JSON.parse()
+// Read from route
 var miundb = require('./miun-db.json');
 
-// För att testa
+// Read from file
+//var file = "miun-db.json";
+//var miundb = [];
+
+//jsonfile2.readFile(file, function(err, obj) {
+//    if (err) {
+//        console.log(err);
+//    } else {
+//        console.log(obj);
+//        miundb = obj;
+//    }
+//});
+
+
 
  
 // Define a route handler for GET requests to the web root
@@ -56,17 +50,36 @@ app.get('/api/courses', function(req, res) {
 //    res.send('respond with a resource');
 //});
 
-app.get('/api/courses/DT190G', function(req, res) {
-    //res.send({ "message": "Hello, World!" });
-    
+
+app.get('/api/courses/:courseCode', function(req, res) {
+    // Gets the coursecode
+    var code = req.params.courseCode;
+    // Init JSON object
+    var send = {};
+
+    // Search miundb for the coursecode
     for(course of miundb.courses) {
-        if (course.keys(course) == "DT190G") {
-            res.status(200).json(course);
-        }
+
+        if (course.courseCode == code) {
+            
+            send = course;
+
+        } else {
+            // If no coursecode return empy object
+            send 
+        }       
+        
     }
+    
+    res.send(send);
     
 });
 
+function saveFile() {
+    jsonfile2.writeFile(file, miundb, function(err) {
+        console.log(err);
+    });
+}
 
 /** 
 app.get('/api/courses', function(req, res) {
