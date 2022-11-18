@@ -63,7 +63,7 @@ app.get('/api/courses/:courseCode', function(req, res) {
     // Search miundb for the coursecode
     for(course of miundb.courses) {
 
-        if (course.courseCode == code) {
+        if (course.courseCode == code.toUpperCase()) {
             // Getting the subject for the course
             for(subject of miundb.subjects) {
                 // If subjectcode matches, add the subject to course
@@ -91,26 +91,43 @@ app.get('api/courses/my', function(req, res) {
     //res.send(miundb.myCourses);
 }); */
 
-app.get('/api/courses/my', function(req, res) {
-    //res.send({ "message": "Hello, World!" });
+app.get('/api/courses/my', function(req, res) { //Funkar inte? HMM?????
+    res.send({ "message": "Hello, World!" });
     //res.status(200).json(miundb);
-    //res.send(miundb.courses);
-    for(course of miundb.courses) {
-
-        if (course.courseCode == code) {
-            
-            send = course;
-
-        } else {
-            // If no coursecode return empy object
-            send 
-        }       
-        
-    }
-    res.send(send);
+    res.send(miundb.courses);
+    // en fuling, ta alla miundb och jämför med mina osv :P
 }); 
 
+// Hämta alla ämnen
+app.get('/api/subjects', function(req, res) {
+    res.send(miundb.subjects);
+})
 
+// Hämta ett specifikt ämne
+app.get('/api/subjects/:subjectCode', function(req, res) {
+    // Gets the subjectcode
+    var subcode = req.params.subjectCode;
+    // Init JSON object
+    var sending = {};
+
+    // Search miundb for the subjecctcode
+    for(subject of miundb.subjects) {
+
+        if (subject.subjectCode == subcode.toUpperCase()) {
+            // Getting the subject            
+                    sending = subject;                
+           
+        // If subjectcode doesn´t exist, return empty object
+        } else {
+
+            sending;
+        };
+                    
+    };
+    
+    res.send(sending);
+    
+})
 
 function saveFile() {
     jsonfile2.writeFile(file, miundb, function(err) {
@@ -118,34 +135,4 @@ function saveFile() {
     });
 }
 
-/** 
-app.get('/api/courses', function(req, res) {
-    //res.send({ "message": "Hello, World!" });
-    // Hur fan sänder man hela json när man inte får läsi in dom från savefile?
-    res.status(200).json(miundb);
-}); */
 
-/** 
-app.get('/api/courses', function(req, res) {
-    res.send(usersDb);
-    
-    //res.status(200).json(usersDb)//.json(usersDb); // Blir ett flmeddelande om den är med
-}); */
-
-/** 
-// Define a route handler for GET requests to the web root
-// TODO: In lab 1, remove before submission
-app.get('/api/courses', function(req, res) {
-    //res.send({ "message": "Hello, World!" });
-    res.send(usersDb)
-    res.status(200).json(usersDb)//.json(usersDb);
-});
-*/
-
-//Fungerar typ ;P
-/** 
-app.get('/api/courses/DT190G', function(req, res) {
-    res.send({ "message": "Hello, World!" });
-    //res.status(200).json(usersDb)//.json(usersDb); // Blir ett flmeddelande om den är med
-});
-*/
