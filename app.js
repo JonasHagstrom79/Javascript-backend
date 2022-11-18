@@ -34,21 +34,24 @@ var miundb = require('./miun-db.json');
 //});
 
 
-
- 
-// Define a route handler for GET requests to the web root
-// TODO: In lab 1, remove before submission
 app.get('/api/courses', function(req, res) {
-    //res.send({ "message": "Hello, World!" });
-    //res.status(200).json(miundb);
-    //res.send(miundb.courses);
-    res.status(200).json(miundb.courses);
+    
+    // For every course in db
+    for(course of miundb.courses) {
+        
+        // For every subject in db
+        for (subject of miundb.subjects) {
+            
+            // If subjectcode matches, add the subject to course
+            if (subject.subjectCode == course.subjectCode) {
+                course["subject"] = subject.subject;
+            };            
+        };        
+        
+    };
+    
+    res.send(miundb.courses);
 }); 
-
-/* GET users listing. */
-//app.get('/api/courses', function(req, res) {
-//    res.send('respond with a resource');
-//});
 
 
 app.get('/api/courses/:courseCode', function(req, res) {
@@ -56,8 +59,42 @@ app.get('/api/courses/:courseCode', function(req, res) {
     var code = req.params.courseCode;
     // Init JSON object
     var send = {};
-
+    
     // Search miundb for the coursecode
+    for(course of miundb.courses) {
+
+        if (course.courseCode == code) {
+            // Getting the subject for the course
+            for(subject of miundb.subjects) {
+                // If subjectcode matches, add the subject to course
+                if (subject.subjectCode == course.subjectCode) {
+
+                    course["subject"] = subject.subject;
+                    send = course
+                };
+            };
+        // If coursecode doesn´t exist, return empty object
+        } else {
+
+            send;
+        };
+                    
+    };
+    
+    res.send(send);
+    
+});
+
+/*
+app.get('api/courses/my', function(req, res) {
+    res.send({ "message": "Hello, World!" });
+    //res.send(miundb.myCourses);
+}); */
+
+app.get('/api/courses/my', function(req, res) {
+    //res.send({ "message": "Hello, World!" });
+    //res.status(200).json(miundb);
+    //res.send(miundb.courses);
     for(course of miundb.courses) {
 
         if (course.courseCode == code) {
@@ -70,10 +107,10 @@ app.get('/api/courses/:courseCode', function(req, res) {
         }       
         
     }
-    
     res.send(send);
-    
-});
+}); 
+
+
 
 function saveFile() {
     jsonfile2.writeFile(file, miundb, function(err) {
