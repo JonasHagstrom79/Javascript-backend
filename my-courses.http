@@ -89,7 +89,7 @@ POST {{url}}/courses/my HTTP/1.1
 content-type: application/json
 
 {
-   "courseCode": "DT005U",
+   "courseCode": "IK006G",//"DT005U",
    "grade": "b"
 }
 
