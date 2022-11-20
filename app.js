@@ -276,169 +276,149 @@ app.get('/api/subjects/:subjectCode', function(req, res) {
 // Add a new MyCourse
 app.post('/api/courses/my', function(req, res) {
 
-    var errCode = 0;
-    var errMsg = {};
-
+        
     //Create new myCourse
     var newMyCourse = {
-        //courseCode: "DT005U", //not in myCourses and in miunDB(new cours for me)
-        courseCode: "IK006G", //already in MyCourses and in miundb
-        //courseCode: "DT000G", //not in miundb
-        grade: "a"
+        //courseCode: "AK001A", //2. not in myCourses and in miunDB(new cours for me)
+        courseCode: "IK006G", //3. already in MyCourses
+        //courseCode: "DT000G", //1. not in miundb
+        grade: "a",
+        //courseCode : req.body.courseCode,
+        //grade : req.body.grade
+    };    
+
+    // Check if course already exist in myCourses
+    for (myCourse of miundb.myCourses) {
+
+        if(newMyCourse.courseCode == myCourse.courseCode) {
+            // Send error message
+            res.status(409).json(
+                {error : "Course already exist in MyCourses"} 
+            );
+            return res.json();
+        }
     };
 
-    x = 0;
-    for (courses of miundb.courses) {
-
+    // If course not in myCourses
+    for (courses of miundb.courses) {  
+        // If the course exist in miundb
         if (newMyCourse.courseCode == courses.courseCode) {
-            console.log("finns ");
-            x++;            
+            // Add the coure to myCourses           
             setCourseData(newMyCourse);
             setSubject(newMyCourse);
+            //saveFile(); //TODO: FUNGERAR men använd bara när du lämnar in!
             res.status(201).json(newMyCourse);
-            //return res.json();
-
+            return res.json();
         } else {
-            console.log("finns inte!");
-            x++;
+            // If not in miundb send error message
             res.status(404).json(
                 {error: "Course doesnt exist" }
             );
             return res.json();
-        }
-        //res.status(404).json(
-        //    {error: "Course doesnt exist" }
-        //);
-    }
-    for (myCourse of miundb.myCourses) {
-
-        if(newMyCourse.courseCode == myCourse.courseCode) {
-            res.status(409).json(
-                {error : "Course already exist in MyCourses"} 
-            );
-        }
-    }
-    console.log(x)
-
-    // Get the submitted data
-    //const courseCode = req.body.courseCode;
-    //const grade = req.body.grade;
-
-    //const newMyCourse = {
-    //    'courseCode': courseCode,
-    //    'grade' : grade
-    //};
-
-    //**************** 
-    //miundb.myCourses.push(newMyCourse); // lägger till i json, inte save
-    //saveFile(); // Fungerar. blir jättefult frmat dock på json
-    //res.status(201).json(newMyCourse); // lägger till i json, inte save
-    //****************
-
-
-    //const courseCode = req.body.courseCode;
-    //const grade = req.body.grade;
-
-
-    /** 
-
-
-    // If courseCode not in miundb
-    for(course of miundb.courses) {
-        // Return error msg && htpp404
-        if (newMyCourse.courseCode != course.courseCode) { //HÄR!!!!
-            
-            //res.send({"error": "Course doesnt exist" }, 404);
-            res.status(404).json(
-                    {error: "Course doesnt exist" }
-                );
-            //errCode = 404;
-            //errMsg = {"error": "Course doesnt exist" };
-
-        } else {
-            // If course in MyCourses
-            for(myCourse of miundb.myCourses) {
-
-                // Return error msg && http 409
-                if (newMyCourse.courseCode == myCourse.courseCode) {
-                    
-                    //errCode = 409;
-                    //errMsg = {"error": "Course already exist" };
-                    res.status(409).json(
-                        {error : "Course already exist"} 
-                    );
-                    //res.send({"error" : "Course already exist"}, 409);
-                } else {
-
-                    // Save the course, return all data && http 201
-                    miundb.myCourses.push(newMyCourse);
-
-                    res.status(201).json(newMyCourse);
-
-                }
-            }
-            
-        }
-
-        //res.status(errCode).send(errMsg);
-        //res.send(newMyCourse);
-
-    }
-
-        
-
-    // Else
-
-        // If course in MyCourses
-
-            
-
-        // Else
-
-            // Save the course, return all data && http 201
-
-    */
+        }        
+    };    
+   
 });
 
 // Update a My-course
 app.put('/api/courses/my/:courseCode', function(req, res) {
 
-    var code = req.params.courseCode;
+    var code = req.params.courseCode;   
+   
+    for (course of miundb.myCourses) {
 
-    // If in MyCourses
+         // If in MyCourses
+        if (course.courseCode == code) {
+            // Update grade
+            course.grade = "q";
+            setCourseData(course);
+            setSubject(course);
+            // Return MyCourse
+            res.status(201).json(course);
+            return res.json();
+        }        
+        
+    }    
 
-        // Update grade
-
-        // Return MyCourse
+    // If not in myCourse return error msg 404
+    for (course of miundb.myCourses) {
+        
+        if (course.courseCode != code) {
+             res.status(402).json(
+                 {error : "Course doesnt exist in MyCourses"} 
+                );
+            return res.json();
+        };
+    };         
 
 });
 
 // Delete a My-course
 app.delete('/api/courses/my/:courseCode', function(req, res) {
 
+    //console.log(miundb);
     var code = req.params.courseCode;
 
     // If in myCourses
+    for (course of miundb.myCourses) {
 
-        // Delete the course && return the course with all its data
+        // If in MyCourses
+        if (course.courseCode == code) {
+           // Delete the course
+           miundb.myCourses.splice(course, 1);
+           setCourseData(course);
+           setSubject(course);
+           // Return the course with all its data
+           res.status(201).json(course);
+           return res.json();
 
-    // If not in myCourses
-
-        // Return error msg && HTTP 404
+        // If not in myCourses
+        } else {
+            // Return error msg && HTTP 404
+            res.status(404).json(
+                {error : "Course doesnt exist in MyCourses"} 
+               );
+           return res.json();
+        }      
+       
+    };       
 
 });
 
 // Get all grades
 app.get('/api/grades', function(req, res) {
 
+    res.send(miundb.grades);
+
 });
 
-// Save JSON file
+
+/**
+ * Save JSON file
+ */
 function saveFile() {
     jsonfile.writeFile(file, miundb, function(err) {
         console.log(err);
     });
 };
+
+// /**
+//  * Checks if course exist in myCourses
+//  */
+// function courseExistMyCourses(course, code, res) {
+
+//     for (course of miundb.myCourses) {
+        
+//         if (course.courseCode != code) {
+//             res.status(402).json(
+//                 {error : "Course doesnt exist in MyCourses"} 
+//             );
+//             return res.json();            
+//         }
+//     }
+           
+// };
+
 
 /**
  * Get the course subject from miundb
@@ -485,5 +465,21 @@ function setCourseData(course) {
 
 };
 
+function accessingPropofReqObj(req) {
 
+    console.log("URL:\t     " + req.originalUrl);
+    console.log("Protocol:   " + req.protocol);
+    console.log("IP:\t     " + req.ip);
+    console.log("Path:\t   " + req.path);
+    console.log("Host:\t   " + req.hostname);
+    console.log("Method:\t     " + req.method);
+    console.log("Query:\t      "+ JSON.stringify(req.query));
+    console.log("Fresh:\t      "+ req.fresh);
+    console.log("Stale:\t   " + req.stale);
+    console.log("Secure:\t  " + req.secure);
+    console.log("UTF8:\t    " + req.acceptsCharsets('utf8'));
+    console.log("Connection: " + req.get('connection'));
+    console.log("Headers: " + JSON.stringify(req.headers,null,2));
+
+};
 
