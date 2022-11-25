@@ -2,11 +2,24 @@
 const express = require('express');
 const cors = require('cors');
 var jsonfile = require('jsonfile');
+//const testar = require('./routes/mycourses.js'); //TODO:remove!!
+//var my = require('./routes/mycourses.js') //TODO:remove!!
+
 
 
 // Create an Express application
 const app = express();
 app.use(cors());  // CORS-enabled for all origins!
+
+// Tell express to use a express.json, a built-in middleware in Express,
+// that parses incoming requests with JSON payloads.
+app.use(express.json());
+
+// Tell express to use express.urlencoded, a built-in middleware in Express,
+// that parses incoming requests with urlencoded payloads.
+// The extended option is required. true is the default value and allows 
+// for a JSON-like experience with URL-encoded.
+app.use(express.urlencoded({ extended: true }));
 
 // Define the port the server will accept connections on
 const port = process.env.PORT || 3000;
@@ -18,7 +31,7 @@ app.listen(port, function() {
 
 
 // Read from route
-//var miundb = require('./miun-db.json');
+var miundb = require('./miun-db.json');
 
 // Read from file
 var file = "miun-db.json";
@@ -27,14 +40,46 @@ var miundb = [];
 jsonfile.readFile(file, function(err, obj) {
     if (err) {
         console.log(err);
-    } else {
-        //console.log(obj); // TODO: Remove
+    } else {        
         miundb = obj;
     }
 });
 
+// Get MyCourses
+app.get('/api/courses/my', function(req, res) { 
+  
+    //var test = req.params.my //TODO:remove!
+    //var test2 = req.path; //TODO:remove!
+    //console.log(test2); //TODO:remove!
+    //console.log(test);
+    //var send = [{}]; // new
+    
+    // Get myCourses from db
+    for (course of miundb.myCourses) {
 
-/** DONT TOUCH!!!!
+        // Get all courses
+        for (miuncourse of miundb.courses) {
+            
+            // Compares with coursecode
+            if (course.courseCode == miuncourse.courseCode) {
+                
+                setCourseData(course);
+
+                setSubject(course);
+                
+                //send.push(course); // new
+            };
+            
+        };
+    };
+
+    //res.send(send); // new
+    res.send(miundb.myCourses);
+    
+}); 
+
+ 
+ //DONT TOUCH!!!!
 app.get('/api/courses', function(req, res) {
     
     // For every course in db
@@ -53,9 +98,10 @@ app.get('/api/courses', function(req, res) {
     };
     
     res.send(miundb.courses);
+    
 }); 
 
-DONT TOUCH!!!!!
+//DONT TOUCH!!!!!
 app.get('/api/courses/:courseCode', function(req, res) {
     // Gets the coursecode
     var code = req.params.courseCode;
@@ -89,128 +135,17 @@ app.get('/api/courses/:courseCode', function(req, res) {
     
 });
 
-*/
+// Define a route handler for GET requests to the web root //TODO:remove!
+// TODO: In lab 1, remove before submission //TODO:remove!
+app.get('/', function(req, res) { //TODO:remove!
+    res.send({ "message": "Hello, World!" }); //TODO:remove!
+}); //TODO:remove!
+
+app.get("/api/", function(req, res) { //TODO:remove!
+    res.send("hejejej"); //TODO:remove!
+}) //TODO:remove!
 
 
-/** 
-// Get MyCourses
-app.get('/api/courses/my', function(req, res) { //Funkar inte? HMM?????
-        
-    // Get myCourses from db
-    for (course of miundb.myCourses) {
-
-        // Get all courses
-        for (miuncourse of miundb.courses) {
-            
-            // Compares with coursecode
-            if (course.courseCode == miuncourse.courseCode) {
-                
-                // Adds data from miudb.courses to myCourses
-                miuncourse["grade"] == course.grade;
-                course["subjectCode"] = miuncourse.subjectCode;
-                course["level"] = miuncourse.level;
-                course["progression"] = miuncourse.progression;
-                course["name"] = miuncourse.name;
-                course["points"] = miuncourse.points;
-                course["institutionCode"] = miuncourse.institutionCode;
-                
-                // Get the subjects
-                for(subject of miundb.subjects) {
-                    
-                    // Adds subject to myCourses if correct subjectcode
-                    if (subject.subjectCode == course.subjectCode) {
-                        course["subject"] = subject.subject;
-                    }
-                }
-                //course["grade"] = "empty" //TODO: remove!!
-            };
-            
-        };
-    };
-
-    res.send(miundb.myCourses);
-    
-}); 
-*/
-
-/** 
-// Get specific MyCourses course
-app.get('/api/courses/my/:courseCode', function(req, res) {
-    
-    var code = req.params.courseCode;
-    var send = {};
-    
-    // Get myCourses from db
-    for (course of miundb.myCourses) {
-
-        // If correct coursecode
-        if (course.courseCode == code.toUpperCase()) {            
-        
-            // Get all courses
-            for (miuncourse of miundb.courses) {
-                
-                // Compares with coursecode
-                if (course.courseCode == miuncourse.courseCode) {
-                    
-                    // Adds data from miudb.courses to myCourses
-                    //miuncourse["grade"] == course.grade;
-                    course["subjectCode"] = miuncourse.subjectCode;
-                    course["level"] = miuncourse.level;
-                    course["progression"] = miuncourse.progression;
-                    course["name"] = miuncourse.name;
-                    course["points"] = miuncourse.points;
-                    course["institutionCode"] = miuncourse.institutionCode;
-                    
-                    // Get the subjects
-                    for(subject of miundb.subjects) {
-                         
-                        // Adds subject to myCourses if correct subjectcode
-                        if (subject.subjectCode == course.subjectCode) {
-                            course["subject"] = subject.subject;
-                        }
-                        
-                        //getSubject(course);
-                        // Sends the object
-                        send = course;
-                    }
-                    
-                };
-                
-            };
-
-        } else {
-            send
-        };
-    };
-
-    res.send(send);
-
-})*/
-
-
-// Get MyCourses
-app.get('/api/courses/my', function(req, res) { //Funkar inte? HMM?????
-        
-    // Get myCourses from db
-    for (course of miundb.myCourses) {
-
-        // Get all courses
-        for (miuncourse of miundb.courses) {
-            
-            // Compares with coursecode
-            if (course.courseCode == miuncourse.courseCode) {
-                
-                setCourseData(course);
-
-                setSubject(course);
-            };
-            
-        };
-    };
-
-    res.send(miundb.myCourses);
-    
-}); 
 
 // Get specific MyCourses course
 app.get('/api/courses/my/:courseCode', function(req, res) {
@@ -276,15 +211,17 @@ app.get('/api/subjects/:subjectCode', function(req, res) {
 // Add a new MyCourse
 app.post('/api/courses/my', function(req, res) {
 
-        
+    //courseCode = req.body.coursecode;
+    var data = req.body;
+    console.log(data);   
     //Create new myCourse
     var newMyCourse = {
         //courseCode: "AK001A", //2. not in myCourses and in miunDB(new cours for me)
-        courseCode: "IK006G", //3. already in MyCourses
+        //courseCode: "IK006G", //3. already in MyCourses
         //courseCode: "DT000G", //1. not in miundb
-        grade: "a",
-        //courseCode : req.body.courseCode,
-        //grade : req.body.grade
+        //grade: "a",
+        courseCode : req.body.courseCode, //HÄRRR!!!! får ej in värdet
+        grade : req.body.grade
     };    
 
     // Check if course already exist in myCourses
@@ -306,16 +243,28 @@ app.post('/api/courses/my', function(req, res) {
             // Add the coure to myCourses           
             setCourseData(newMyCourse);
             setSubject(newMyCourse);
-            //saveFile(); //TODO: FUNGERAR men använd bara när du lämnar in!
+            saveFile(); //TODO: FUNGERAR men använd bara när du lämnar in!
             res.status(201).json(newMyCourse);
             return res.json();
-        } else {
+        } 
+    };
+ 
+    for (courses of miundb.courses) {  
+        if (newMyCourse.courseCode != courses.courseCode) {
+             // If not in miundb send error message
+             res.status(404).json(
+                {error: "Course doesnt exist" }
+            );
+            return res.json();
+        };
+        /** 
+        } else { // Fungerar ej då den avbryter
             // If not in miundb send error message
             res.status(404).json(
                 {error: "Course doesnt exist" }
             );
             return res.json();
-        }        
+        }   */     
     };    
    
 });
@@ -330,11 +279,12 @@ app.put('/api/courses/my/:courseCode', function(req, res) {
          // If in MyCourses
         if (course.courseCode == code) {
             // Update grade
-            course.grade = "q";
+            course.grade = req.body.grade
             setCourseData(course);
             setSubject(course);
+            saveFile(); //TODO: Saves the file
             // Return MyCourse
-            res.status(201).json(course);
+            res.status(200).json(course);
             return res.json();
         }        
         
@@ -344,7 +294,7 @@ app.put('/api/courses/my/:courseCode', function(req, res) {
     for (course of miundb.myCourses) {
         
         if (course.courseCode != code) {
-             res.status(402).json(
+             res.status(404).json(
                  {error : "Course doesnt exist in MyCourses"} 
                 );
             return res.json();
@@ -356,7 +306,7 @@ app.put('/api/courses/my/:courseCode', function(req, res) {
 // Delete a My-course
 app.delete('/api/courses/my/:courseCode', function(req, res) {
 
-    //console.log(miundb);
+    //console.log(miundb); //TODO:remove!
     var code = req.params.courseCode;
 
     // If in myCourses
@@ -368,8 +318,9 @@ app.delete('/api/courses/my/:courseCode', function(req, res) {
            miundb.myCourses.splice(course, 1);
            setCourseData(course);
            setSubject(course);
+           saveFile(); //TODO: FUNGERAR men använd bara när du lämnar in!
            // Return the course with all its data
-           res.status(201).json(course);
+           res.status(200).json(course);
            return res.json();
 
         // If not in myCourses
@@ -465,6 +416,10 @@ function setCourseData(course) {
 
 };
 
+/**
+ * Func to print properties of the req object to console
+ * @param {*} req 
+ */
 function accessingPropofReqObj(req) {
 
     console.log("URL:\t     " + req.originalUrl);
