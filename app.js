@@ -280,6 +280,7 @@ app.put('/api/courses/my/:courseCode', function(req, res) {
         if (course.courseCode == code) {
             // Update grade
             course.grade = req.body.grade
+            //saveFile(); //TODO: Saves the file
             setCourseData(course);
             setSubject(course);
             saveFile(); //TODO: Saves the file
