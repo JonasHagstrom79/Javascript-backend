@@ -31,7 +31,7 @@ app.listen(port, function() {
 
 
 // Read from route
-var miundb = require('./miun-db.json');
+// var miundb = require('./miun-db.json');
 
 // Read from file
 var file = "miun-db.json";
@@ -240,10 +240,13 @@ app.post('/api/courses/my', function(req, res) {
     for (courses of miundb.courses) {  
         // If the course exist in miundb
         if (newMyCourse.courseCode == courses.courseCode) {
-            // Add the coure to myCourses           
+            // Sets the data           
             setCourseData(newMyCourse);
             setSubject(newMyCourse);
-            saveFile(); //TODO: FUNGERAR men använd bara när du lämnar in!
+            // Add to array
+            miundb.myCourses.push(newMyCourse);
+            // Save the file
+            saveFile(); 
             res.status(201).json(newMyCourse);
             return res.json();
         } 
