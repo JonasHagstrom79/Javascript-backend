@@ -283,10 +283,14 @@ app.put('/api/courses/my/:courseCode', function(req, res) {
         if (course.courseCode == code) {
             // Update grade
             course.grade = req.body.grade
-            //saveFile(); //TODO: Saves the file
+            
+            // Sets the data
             setCourseData(course);
             setSubject(course);
-            saveFile(); //TODO: Saves the file
+
+            //Saves the file
+            saveFile(); 
+
             // Return MyCourse
             res.status(200).json(course);
             return res.json();
@@ -313,30 +317,63 @@ app.delete('/api/courses/my/:courseCode', function(req, res) {
     //console.log(miundb); //TODO:remove!
     var code = req.params.courseCode;
 
+    const myCoursestest = miundb.myCourses;
+    // console.log("deleteMyCourse");
+    // console.log(myCoursestest);
+
     // If in myCourses
+    for(var i=0; i<myCoursestest.length; i++) {
+        if(myCoursestest[i].courseCode == code) {
+            course = myCoursestest;
+            myCoursestest.splice(i, 1);
+
+            saveFile();
+            res.status(200).json(course);
+            return res.json();
+        }
+    }    
+
+    // If not in myCourse return error msg 404
     for (course of miundb.myCourses) {
+        
+        if (course.courseCode != code) {
+             res.status(404).json(
+                 {error : "Course doesnt exist in MyCourses"} 
+                );
+            return res.json();
+        };
+    };         
 
-        // If in MyCourses
-        if (course.courseCode == code) {
-           // Delete the course
-           miundb.myCourses.splice(course, 1);
-           setCourseData(course);
-           setSubject(course);
-           saveFile(); //TODO: FUNGERAR men använd bara när du lämnar in!
-           // Return the course with all its data
-           res.status(200).json(course);
-           return res.json();
 
-        // If not in myCourses
-        } else {
-            // Return error msg && HTTP 404
-            res.status(404).json(
-                {error : "Course doesnt exist in MyCourses"} 
-               );
-           return res.json();
-        }      
+
+    // If in myCourses
+    // for (course of miundb.myCourses) {
+
+    //     // If in MyCourses
+    //     if (course.courseCode == code) {
+    //        // Delete the course
+    //        miundb.myCourses.splice(course, 1);
+    //     //    setCourseData(course);
+    //     //    setSubject(course);
+
+
+
+    //        saveFile(); //TODO: FUNGERAR men använd bara när du lämnar in!
+    //        // Return the course with all its data
+    //        res.status(200).json(course);
+    //        return res.json();
+
+    //     // If not in myCourses
+    //     } //TODO: se metoden ovan kanske för inspiration
+    //     // } else {
+    //     //     // Return error msg && HTTP 404
+    //     //     res.status(404).json(
+    //     //         {error : "Course doesnt exist in MyCourses"} 
+    //     //        );
+    //     //    return res.json();
+    //     // }      
        
-    };       
+    // };       
 
 });
 
