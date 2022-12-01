@@ -27,7 +27,16 @@ app.listen(port, function() {
 
 // Read from file
 var file = "miun-db.json";
+
+// Declaring variables
 var miundb = [];
+var course;
+var miuncourse;
+var subject;
+var courses;
+var myCourse;
+
+
 
 /**
  * Reads a json-file
@@ -43,7 +52,7 @@ jsonfile.readFile(file, function(err, obj) {
 // Get MyCourses
 app.get('/api/courses/my', function(req, res) { 
   
-        
+    
     // Get myCourses from db
     for (course of miundb.myCourses) {
 
