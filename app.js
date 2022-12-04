@@ -69,7 +69,8 @@ async function main() {
     await mongoose.connect(connectionString);
     console.log("Connected");
 
-    const coursesSchema = new mongoose.Schema({
+    // Creates a schema that defines a sourse in the database
+    const courseSchema = new mongoose.Schema({
         _id: _id, //TODO:correct?
         courseCode: {
             type: String,
@@ -94,7 +95,7 @@ async function main() {
             required: true
         },
         points: {
-            type: Double,
+            type: Number,
             required: true            
         },
         institutionCode: {
@@ -106,7 +107,56 @@ async function main() {
             required: true
         }
 
-    })
+    });
+
+    // Ceates a schema that defines a grade in the database
+    const gradeSchema = new mongoose.Schema({
+        _id: _id, //TODO:correct?
+        name: {
+            type: String,
+            required: true,
+            minLength: 2,
+            maxLength: 3
+        },
+        grades: {
+            type: Array,
+            required: true
+        }
+    });
+
+    // Creates a schema that defines a institution in the database
+    const institutionSchema = new mongoose.Schema({
+        _id: _id, //TODO:correct?
+        institutionCode: String,
+        institution: String,
+        description: String,
+        language: String
+    });
+
+    // Creates a schema tha defines a myCourse in the database
+    const mycourseSchema = new mongoose.Schema({
+        _id: _id, //TODO:necesarry?
+        courseCode: String,
+        grade: String
+    });
+
+    // Creates a schema that defines a subject in the database
+    const subjectSchema = new mongoose.Schema({
+        _id: _id, //TODO:correct?
+        subjectCode: String,
+        subject: String,
+        preamble: String,
+        bodyText: String,
+        language: String
+    });
+
+    // Compile to moongoose model
+    const Course = mongoose.model('Course', courseSchema);
+    const Grade = mongoose.model('Grade', gradeSchema);
+    const Institution = mongoose.model('Institution', institutionSchema);
+    const Mycourse = mongoose.model('Mycourse', mycourseSchema);
+    const Subject = mongoose.model('Subject', subjectSchema);
+
 }
 
 
