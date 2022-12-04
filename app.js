@@ -31,8 +31,6 @@ app.listen(port, function() {
     console.log(`Server is running on port ${port}`);
 });
 
-// Read from file
-var file = "miun-db.json";
 
 // Declaring variables
 var miundb = [];
@@ -71,7 +69,7 @@ async function main() {
 
     // Creates a schema that defines a sourse in the database
     const courseSchema = new mongoose.Schema({
-        _id: _id, //TODO:correct?
+        _id: String, //TODO:correct?
         courseCode: {
             type: String,
             required: true,
@@ -111,7 +109,7 @@ async function main() {
 
     // Ceates a schema that defines a grade in the database
     const gradeSchema = new mongoose.Schema({
-        _id: _id, //TODO:correct?
+        //_id: _id, //TODO:correct?
         name: {
             type: String,
             required: true,
@@ -126,7 +124,7 @@ async function main() {
 
     // Creates a schema that defines a institution in the database
     const institutionSchema = new mongoose.Schema({
-        _id: _id, //TODO:correct?
+        //_id: _id, //TODO:correct?
         institutionCode: String,
         institution: String,
         description: String,
@@ -134,15 +132,64 @@ async function main() {
     });
 
     // Creates a schema tha defines a myCourse in the database
+    // const mycourseSchema = new mongoose.Schema({
+    //     _id: String, //TODO:necesarry?
+    //     courseCode: String,
+    //     grade: String//,
+    //     // subjectCode: {
+    //     //     type: Number,
+    //     //     required: true,
+    //     //     ref: 'Course',
+    //     //     default: -1
+    //     // }, //TODO:correct?
+    //     // level: {
+    //     //     type: Number,
+    //     //     required: true,
+    //     //     ref: 'Course',
+    //     //     default: -1
+    //     // }, //TODO:correct?
+    //     // progression: {
+    //     //     type: Number,
+    //     //     required: true,
+    //     //     ref: 'Course',
+    //     //     default: -1
+    //     // }, //TODO:correct?
+    //     // name : {
+    //     //     type: Number,
+    //     //     required: true,
+    //     //     ref: 'Course',
+    //     //     default: -1
+    //     // }, //TODO:correct?
+    //     // points: {
+    //     //     type: Number,
+    //     //     required: true,
+    //     //     ref: 'Course',
+    //     //     default: -1
+    //     // }, //TODO:correct?
+    //     // institutionCode: {
+    //     //     type: Number,
+    //     //     required: true,
+    //     //     ref: 'Course',
+    //     //     default: -1
+    //     // } //TODO:correct?
+        
+    // });
+
     const mycourseSchema = new mongoose.Schema({
-        _id: _id, //TODO:necesarry?
-        courseCode: String,
+        _id: String,
+        courseCode: { 
+            type: String,
+            required: true,
+            uppercase: true,
+            minLength: 6,
+            maxLength: 6
+        },
         grade: String
     });
 
     // Creates a schema that defines a subject in the database
     const subjectSchema = new mongoose.Schema({
-        _id: _id, //TODO:correct?
+        //_id: _id, //TODO:correct?
         subjectCode: String,
         subject: String,
         preamble: String,
@@ -154,23 +201,59 @@ async function main() {
     const Course = mongoose.model('Course', courseSchema);
     const Grade = mongoose.model('Grade', gradeSchema);
     const Institution = mongoose.model('Institution', institutionSchema);
-    const Mycourse = mongoose.model('Mycourse', mycourseSchema);
+    const MyCourse = mongoose.model('Mycourse', mycourseSchema);
     const Subject = mongoose.model('Subject', subjectSchema);
+
+    // Set myCourses data from courses 32:00
+    // Mycourse.subjectCode = Course._id; //TODO:correct?
+    // Mycourse.level = Course._id;
+    // Mycourse.progression = Course._id;
+    // Mycourse.name = Course._id;
+    // Mycourse.points = Course._id;
+    // Mycourse.institutionCode = Course._id
+
+
+    // Returnera allt från databasen
+    // console.log("find all courses");
+    // const courses = await Course.find();
+    // console.log(courses);
+
+    // Returnera AK00
+    console.log("Find all with:AK001U");
+    const coursesAK00 = await Course.find({
+        courseCode: 'AK001U'
+    });
+    console.log(coursesAK00);
+
+    console.log("Find all courses ending with U");
+    const endingWithU = await Course.find({
+        courseCode: {$regex : 'U$'}
+    }, ['name','courseCode'] //Only return name and courscode
+    );
+    console.log(endingWithU);
+
+    // Returnera all myCourses //TODO:not working!
+    console.log("Find all myCourses");
+    const mycourses = await MyCourse.find();
+    console.log(mycourses);
+
+    // // Return all subject
+    // console.log("return subjects");
+    // const subject = await Subject.find();
+    // console.log(subject);
+
+    // Return all institutions
+    // console.log("find all institutions");
+    // const institutions = await Institution.find();
+    // console.log(institutions);
+
+    // Return all grades
+    // console.log("Getting the grades");
+    // const grades = await Grade.find();
+    // console.log(grades);
 
 }
 
-
-
-/**
- * Reads a json-file
- */
-jsonfile.readFile(file, function(err, obj) {
-    if (err) {
-        console.log(err);
-    } else {        
-        miundb = obj;
-    }
-});
 
 // Get MyCourses
 app.get('/api/courses/my', function(req, res) { 
