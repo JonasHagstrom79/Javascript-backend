@@ -2,6 +2,12 @@
 const express = require('express');
 const cors = require('cors');
 var jsonfile = require('jsonfile');
+const mongoose = require("mongoose");
+const dotenv = require('dotenv').config(); //To mongoDb
+
+// // Connect to moongoose
+// const connectionString = process.env.DB_SERVER;
+// await mongoose.connect(connectionString) //TODO:test if it works
 
 // Create an Express application
 const app = express();
@@ -35,6 +41,73 @@ var miuncourse;
 var subject;
 var courses;
 var myCourse;
+
+/**
+ * Call our main function, catch and log errors if they orrur
+ */
+main().catch( err => {
+    console.error(err);
+    close();
+})
+
+/**
+ * Closes the connection to database
+ */
+async function close() {
+    console.log(`Disconnecting from database`);
+    await mongoose.disconnect();
+    console.log("Disconnected");
+}
+
+/**
+ * Connects to the database
+ */
+async function main() {
+    console.log("Connecting to db");
+    // Connect to moongoose
+    const connectionString = process.env.DB_SERVER;
+    await mongoose.connect(connectionString);
+    console.log("Connected");
+
+    const coursesSchema = new mongoose.Schema({
+        _id: _id, //TODO:correct?
+        courseCode: {
+            type: String,
+            required: true,
+            uppercase: true,
+            minLength: 6,
+            maxLength: 6
+        },
+        subjectCode: {
+            type: String,
+            required: true
+        },
+        level: {
+            type: String,
+            required: true
+        },
+        progression: {
+            type: String            
+        },
+        name: {
+            type: String,
+            required: true
+        },
+        points: {
+            type: Double,
+            required: true            
+        },
+        institutionCode: {
+            type: String,
+            required: true
+        },
+        subject: {
+            type: String,
+            required: true
+        }
+
+    })
+}
 
 
 
