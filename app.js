@@ -333,7 +333,33 @@ async function main() {
         res.send(findSubject);
     });
 
-    // 
+    // Get all grades
+    app.get('/grades', async function(req, res) {
+
+        const grades = await Grade.find();
+        res.send(grades);
+    });
+
+    // Get grades ug
+    app.get('/grades/ug', async function(req, res) {
+
+        const ugGrades = await Grade.find({"name" : "ug"})
+        res.send(ugGrades);
+    })
+
+    // Get grades uvg
+    app.get('/grades/uvg', async function(req, res) {
+
+        const ugvGrades = await Grade.find({"name" : "uvg"})
+        res.send(ugvGrades);
+    })
+
+    // Get grades fa
+    app.get('/grades/fa', async function(req, res) {
+
+        const faGrades = await Grade.find({"name" : "fa"})
+        res.send(faGrades);
+    })
     
     
 }
