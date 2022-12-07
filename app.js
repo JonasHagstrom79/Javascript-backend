@@ -360,9 +360,65 @@ async function main() {
         const faGrades = await Grade.find({"name" : "fa"})
         res.send(faGrades);
     })
+
+    // Add a new MyCourse
+    app.post('/courses/my', async function(req, res) {
+
+        newCoursecode = req.body.courseCode, 
+        newGrade = req.body.grade;
+
+        const newMyCourse = new Mycourse({
+            courseCode : newCoursecode,
+            grade : newGrade
+        });
+
+        // Get myCourses
+        const mycourses = await Mycourse.find().to
+        const courses = await Course.find()
+
+        // Check if course already exist in myCourses
+        for (courseCode of mycourses.courseCode) {
+            
+            if(newCourseCode == courseCode) {
+                // Send error message
+                res.status(409).json(
+                    {error : "Course already exist in MyCourses"} 
+                );
+                return res.json();
+            }
+        }
+        // If course not in myCourses
+        for (courseCode of courses.courseCode) {  
+            // If the course exist in miundb
+            if (newMyCourse.courseCode == courses.courseCode) {
+                
+                try {
+
+                    await newMyCourse.save();
+                    res.status(201);
+
+                } catch (error) {
+                    console.error(error.message);
+                }
+                                
+            } 
+        };
+
+        for (courses of courses.courses) {  
+            if (newMyCourse.courseCode != courses.courseCode) {
+                 // If not in miundb send error message
+                 res.status(404).json(
+                    {error: "Course doesnt exist" }
+                );
+                return res.json();
+            };         
+        };
+
+
+    });
     
     
-}
+};
 module.exports = main; //TODO:???
 
 // Get MyCourses
