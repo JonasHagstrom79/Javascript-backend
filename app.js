@@ -33,12 +33,12 @@ app.listen(port, function() {
 
 
 // Declaring variables
-var miundb = [];
-var course;
-var miuncourse;
-var subject;
-var courses;
-var myCourse;
+// var miundb = [];
+// var course;
+// var miuncourse;
+// var subject;
+// var courses;
+// var myCourse;
 
 /**
  * Call our main function, catch and log errors if they orrur
@@ -67,7 +67,7 @@ async function main() {
     await mongoose.connect(connectionString);
     console.log("Connected");
 
-    // Creates a schema that defines a sourse in the database
+    // Creates a schema that defines a course in the database
     const courseSchema = new mongoose.Schema({
         _id: String, //TODO:correct?
         courseCode: {
@@ -132,60 +132,61 @@ async function main() {
     });
 
     // Creates a schema tha defines a myCourse in the database
-    // const mycourseSchema = new mongoose.Schema({
-    //     _id: String, //TODO:necesarry?
-    //     courseCode: String,
-    //     grade: String//,
-    //     // subjectCode: {
-    //     //     type: Number,
-    //     //     required: true,
-    //     //     ref: 'Course',
-    //     //     default: -1
-    //     // }, //TODO:correct?
-    //     // level: {
-    //     //     type: Number,
-    //     //     required: true,
-    //     //     ref: 'Course',
-    //     //     default: -1
-    //     // }, //TODO:correct?
-    //     // progression: {
-    //     //     type: Number,
-    //     //     required: true,
-    //     //     ref: 'Course',
-    //     //     default: -1
-    //     // }, //TODO:correct?
-    //     // name : {
-    //     //     type: Number,
-    //     //     required: true,
-    //     //     ref: 'Course',
-    //     //     default: -1
-    //     // }, //TODO:correct?
-    //     // points: {
-    //     //     type: Number,
-    //     //     required: true,
-    //     //     ref: 'Course',
-    //     //     default: -1
-    //     // }, //TODO:correct?
-    //     // institutionCode: {
-    //     //     type: Number,
-    //     //     required: true,
-    //     //     ref: 'Course',
-    //     //     default: -1
-    //     // } //TODO:correct?
-        
-    // });
-
     const mycourseSchema = new mongoose.Schema({
-        _id: String,
-        courseCode: { 
-            type: String,
+        _id: String, //TODO:necesarry?
+        courseCode: String,
+        grade: String,
+        subjectCode: {
+            type: Number,
             required: true,
-            uppercase: true,
-            minLength: 6,
-            maxLength: 6
-        },
-        grade: String
+            ref: 'Course',
+            default: -1
+        }, //TODO:correct?
+        level: {
+            type: Number,
+            required: true,
+            ref: 'Course',
+            default: -1
+        }, //TODO:correct?
+        progression: {
+            type: Number,
+            required: true,
+            ref: 'Course',
+            default: -1
+        }, //TODO:correct?
+        name : {
+            type: Number,
+            required: true,
+            ref: 'Course',
+            default: -1
+        }, //TODO:correct?
+        points: {
+            type: Number,
+            required: true,
+            ref: 'Course',
+            default: -1
+        }, //TODO:correct?
+        institutionCode: {
+            type: Number,
+            required: true,
+            ref: 'Course',
+            default: -1
+        } //TODO:correct?
+        
     });
+
+    // const mycourseSchema = new mongoose.Schema({
+    //     //_id: String,
+    //     courseCode: String,
+    //     // { 
+    //     //     type: String,
+    //     //     required: true,
+    //     //     uppercase: true,
+    //     //     minLength: 6,
+    //     //     maxLength: 6
+    //     // },
+    //     grade: String
+    // });
 
     // Creates a schema that defines a subject in the database
     const subjectSchema = new mongoose.Schema({
@@ -196,12 +197,13 @@ async function main() {
         bodyText: String,
         language: String
     });
+    //var myCourses; //TODO:remove!
 
     // Compile to moongoose model
     const Course = mongoose.model('Course', courseSchema);
     const Grade = mongoose.model('Grade', gradeSchema);
     const Institution = mongoose.model('Institution', institutionSchema);
-    const MyCourse = mongoose.model('Mycourse', mycourseSchema);
+    const Mycourse = mongoose.model('Mycourse', mycourseSchema, 'myCourses'); //Speca 
     const Subject = mongoose.model('Subject', subjectSchema);
 
     // Set myCourses data from courses 32:00
@@ -212,30 +214,59 @@ async function main() {
     // Mycourse.points = Course._id;
     // Mycourse.institutionCode = Course._id
 
+    // Get MyCourses
+    //const mycourses = await Mycourse.find()//.populate('level');
+    //console.log(mycourses);
+
 
     // Returnera allt från databasen
     // console.log("find all courses");
-    // const courses = await Course.find();
+    //const courses = await Course.find();
     // console.log(courses);
 
-    // Returnera AK00
-    console.log("Find all with:AK001U");
-    const coursesAK00 = await Course.find({
-        courseCode: 'AK001U'
-    });
-    console.log(coursesAK00);
+    // // Returnera AK00
+    //  console.log("Find all with:AK001U");
+    //  const coursesAK00 = await Course.find({
+    //      courseCode: 'AK001U'
+    //   });
+    //  console.log(coursesAK00);
 
-    console.log("Find all courses ending with U");
-    const endingWithU = await Course.find({
-        courseCode: {$regex : 'U$'}
-    }, ['name','courseCode'] //Only return name and courscode
-    );
-    console.log(endingWithU);
+    // //console.log("Add myCourse in mongoDB")
+
+    // console.log("Aggregate");
+    // const agg = await Course.aggregate([
+    //     // Filters by points
+    //     {
+    //         $match: {points: 60}
+    //     },
+    //     // Group remaining documents by institutioncode
+    //     {
+    //         $group: {_id: "$name"}
+    //     }//,
+    //     // {
+    //     //     $unwind: '$_id'
+    //     // }
+    // ])
+    // console.log(agg)
+
+
+    // console.log("Find all courses ending with U");
+    // const endingWithU = await Course.find({
+    //     courseCode: {$regex : 'U$'}
+    // }, ['name','courseCode'] //Only return name and courscode
+    // );
+    // console.log(endingWithU);
 
     // Returnera all myCourses //TODO:not working!
-    console.log("Find all myCourses");
-    const mycourses = await MyCourse.find();
-    console.log(mycourses);
+    // console.log("Find all myCourses");   
+
+    // console.log("Test mycourses");
+    // const test = await Mycourse.find({
+    //    grade: {$regex: 'A$'} 
+    // }, ['grade']
+    // );
+    // console.log(test);
+    // console.log(mycourses);
 
     // // Return all subject
     // console.log("return subjects");
@@ -252,12 +283,67 @@ async function main() {
     // const grades = await Grade.find();
     // console.log(grades);
 
-}
+    // Get MyCourses
+    app.get('/courses/my', async function(req, res) { 
+        const mycourses = await Mycourse.find()
+        res.send(mycourses)
 
+    });
+
+    // Get all miun courses
+    app.get('/courses', async function(req, res) {        
+        const courses = await Course.find();
+        res.send(courses);
+    });
+
+    // Get a specific course
+    app.get('/courses/:courseCode', async function(req, res) {
+
+        // Get the coursecode
+        var code = req.params.courseCode;
+        
+        const findcourse = await Course.find({"courseCode" : code});
+        res.send(findcourse);
+    });       
+        
+    // Get specific MyCourses course
+    app.get('/courses/my/:courseCode', async function(req, res){
+
+        // Get the coursecode
+        var code = req.params.courseCode;
+
+        const findMycourse = await Mycourse.find({"courseCode" : code});
+        res.send(findMycourse);
+    })
+
+    // Get all the subjects
+    app.get('/subjects', async function(req, res) {
+
+        const subjects = await Subject.find();
+        res.send(subjects);
+    })
+
+    // Get a specific subject
+    app.get('/subjects/:subjectCode', async function(req, res) {
+
+        // Get the subjectcode
+        var code = req.params.subjectCode;
+
+        const findSubject = await Subject.find({"subjectCode" : code})
+        res.send(findSubject);
+    });
+
+    // 
+    
+    
+}
+module.exports = main; //TODO:???
 
 // Get MyCourses
-app.get('/api/courses/my', function(req, res) { 
-  
+/** 
+app.get('/api/courses/my', function(req, res) {     
+    
+    
     
     // Get myCourses from db
     for (course of miundb.myCourses) {
@@ -394,7 +480,7 @@ app.get('/api/subjects/:subjectCode', function(req, res) {
     
 })
 
-
+*/
 // Add a new MyCourse
 app.post('/api/courses/my', function(req, res) {
               
