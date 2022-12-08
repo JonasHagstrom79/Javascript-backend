@@ -284,20 +284,20 @@ async function main() {
     // console.log(grades);
 
     // Get MyCourses
-    app.get('/courses/my', async function(req, res) { 
+    app.get('/api/courses/my', async function(req, res) { 
         const mycourses = await Mycourse.find()
         res.send(mycourses)
 
     });
 
     // Get all miun courses
-    app.get('/courses', async function(req, res) {        
+    app.get('/api/courses', async function(req, res) {        
         const courses = await Course.find();
         res.send(courses);
     });
 
     // Get a specific course
-    app.get('/courses/:courseCode', async function(req, res) {
+    app.get('/api/courses/:courseCode', async function(req, res) {
 
         // Get the coursecode
         var code = req.params.courseCode;
@@ -307,7 +307,7 @@ async function main() {
     });       
         
     // Get specific MyCourses course
-    app.get('/courses/my/:courseCode', async function(req, res){
+    app.get('/api/courses/my/:courseCode', async function(req, res){
 
         // Get the coursecode
         var code = req.params.courseCode;
@@ -317,14 +317,14 @@ async function main() {
     })
 
     // Get all the subjects
-    app.get('/subjects', async function(req, res) {
+    app.get('/api/subjects', async function(req, res) {
 
         const subjects = await Subject.find();
         res.send(subjects);
     })
 
     // Get a specific subject
-    app.get('/subjects/:subjectCode', async function(req, res) {
+    app.get('/api/subjects/:subjectCode', async function(req, res) {
 
         // Get the subjectcode
         var code = req.params.subjectCode;
@@ -334,35 +334,35 @@ async function main() {
     });
 
     // Get all grades
-    app.get('/grades', async function(req, res) {
+    app.get('/api/grades', async function(req, res) {
 
         const grades = await Grade.find();
         res.send(grades);
     });
 
     // Get grades ug
-    app.get('/grades/ug', async function(req, res) {
+    app.get('/api/grades/ug', async function(req, res) {
 
         const ugGrades = await Grade.find({"name" : "ug"})
         res.send(ugGrades);
     })
 
     // Get grades uvg
-    app.get('/grades/uvg', async function(req, res) {
+    app.get('/api/grades/uvg', async function(req, res) {
 
         const ugvGrades = await Grade.find({"name" : "uvg"})
         res.send(ugvGrades);
     })
 
     // Get grades fa
-    app.get('/grades/fa', async function(req, res) {
+    app.get('/api/grades/fa', async function(req, res) {
 
         const faGrades = await Grade.find({"name" : "fa"})
         res.send(faGrades);
     })
 
     // Add a new MyCourse
-    app.post('/courses/my', async function(req, res) {
+    app.post('/api/courses/my', async function(req, res) {
 
         newCoursecode = req.body.courseCode, 
         newGrade = req.body.grade;
