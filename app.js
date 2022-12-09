@@ -304,7 +304,7 @@ async function main() {
                 // Gets the course-data to myCourse
                 if (findMycourse.courseCode == course.courseCode) {
                     
-                    findMycourse["subjectCode"] = course.subjectCode
+                    findMycourse["subjectCode"] = course.subjectCode //TODO: Better code?
                     findMycourse["level"] = course.level;
                     findMycourse["progression"] = course.progression;
                     findMycourse["name"] = course.name;
@@ -350,25 +350,27 @@ async function main() {
     // Get all grades
     app.get('/api/grades', async function(req, res) {
 
-        const grades = await Grade.find();
+        //const grades = await Grade.find();
+        //const grades = await Grade.find({"grades": ["-","fx","f","e","d","c","b","a"] })
+        const grades = await Grade.find({"grades" : ["-","fx","f","e","d","c","b","a"] })
         res.send(grades);
     });
 
-    // Get grades ug
+    // Get grades ug //TODO:remove!
     app.get('/api/grades/ug', async function(req, res) {
 
         const ugGrades = await Grade.find({"name" : "ug"})
         res.send(ugGrades);
     })
 
-    // Get grades uvg
+    // Get grades uvg //TODO:remove!
     app.get('/api/grades/uvg', async function(req, res) {
 
         const ugvGrades = await Grade.find({"name" : "uvg"})
         res.send(ugvGrades);
     })
 
-    // Get grades fa
+    // Get grades fa //TODO:remove!
     app.get('/api/grades/fa', async function(req, res) {
 
         const faGrades = await Grade.find({"name" : "fa"})
