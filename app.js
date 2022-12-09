@@ -137,37 +137,37 @@ async function main() {
         courseCode: String,
         grade: String,
         subjectCode: {
-            type: Number,
+            type: String,
             required: true,
             ref: 'Course',
             default: -1
         }, //TODO:correct?
         level: {
-            type: Number,
+            type: String,
             required: true,
             ref: 'Course',
             default: -1
         }, //TODO:correct?
         progression: {
-            type: Number,
+            type: String,
             required: true,
             ref: 'Course',
             default: -1
         }, //TODO:correct?
         name : {
-            type: Number,
+            type: String,
             required: true,
             ref: 'Course',
             default: -1
         }, //TODO:correct?
         points: {
-            type: Number,
+            type: String,
             required: true,
             ref: 'Course',
             default: -1
         }, //TODO:correct?
         institutionCode: {
-            type: Number,
+            type: String,
             required: true,
             ref: 'Course',
             default: -1
@@ -207,31 +207,17 @@ async function main() {
     const Subject = mongoose.model('Subject', subjectSchema);
 
     // Set myCourses data from courses 32:00
-    // Mycourse.subjectCode = Course._id; //TODO:correct?
-    // Mycourse.level = Course._id;
-    // Mycourse.progression = Course._id;
-    // Mycourse.name = Course._id;
-    // Mycourse.points = Course._id;
-    // Mycourse.institutionCode = Course._id
+    Mycourse.subjectCode = Course.subjectCode; //TODO:correct?
+    Mycourse.level = Course.level;
+    Mycourse.progression = Course.progression;
+    Mycourse.name = Course.name;
+    Mycourse.points = Course.points;
+    Mycourse.institutionCode = Course.institutionCode
 
     // Get MyCourses
     //const mycourses = await Mycourse.find()//.populate('level');
     //console.log(mycourses);
-
-
-    // Returnera allt från databasen
-    // console.log("find all courses");
-    //const courses = await Course.find();
-    // console.log(courses);
-
-    // // Returnera AK00
-    //  console.log("Find all with:AK001U");
-    //  const coursesAK00 = await Course.find({
-    //      courseCode: 'AK001U'
-    //   });
-    //  console.log(coursesAK00);
-
-    // //console.log("Add myCourse in mongoDB")
+   
 
     // console.log("Aggregate");
     // const agg = await Course.aggregate([
@@ -250,43 +236,23 @@ async function main() {
     // console.log(agg)
 
 
-    // console.log("Find all courses ending with U");
-    // const endingWithU = await Course.find({
-    //     courseCode: {$regex : 'U$'}
-    // }, ['name','courseCode'] //Only return name and courscode
-    // );
-    // console.log(endingWithU);
-
-    // Returnera all myCourses //TODO:not working!
-    // console.log("Find all myCourses");   
-
-    // console.log("Test mycourses");
-    // const test = await Mycourse.find({
-    //    grade: {$regex: 'A$'} 
-    // }, ['grade']
-    // );
-    // console.log(test);
-    // console.log(mycourses);
-
-    // // Return all subject
-    // console.log("return subjects");
-    // const subject = await Subject.find();
-    // console.log(subject);
-
-    // Return all institutions
-    // console.log("find all institutions");
-    // const institutions = await Institution.find();
-    // console.log(institutions);
-
-    // Return all grades
-    // console.log("Getting the grades");
-    // const grades = await Grade.find();
-    // console.log(grades);
+    
 
     // Get MyCourses
-    app.get('/api/courses/my', async function(req, res) { 
-        const mycourses = await Mycourse.find()
+    app.get('/api/courses/my', async function(req, res) {         
+        
+        // Gets data from mongoDB
+        const mycourses = await Mycourse.find();
+        const courses = await Course.find();
+        
+        for (course of courses) {
+            
+            // Gets the course-data to myCourse
+            getCourseData(mycourses, course)
+            
+        }
         res.send(mycourses)
+       
 
     });
 
@@ -300,10 +266,21 @@ async function main() {
     app.get('/api/courses/:courseCode', async function(req, res) {
 
         // Get the coursecode
-        var code = req.params.courseCode;
+        var code = req.params.courseCode;       
+       
+
+        const findcourse = await Course.findOne({"courseCode" : code});
+        // If coursecode doesnt get an answer send empty json
+        if (findcourse == null) {
+
+            res.send({});
+
+        } else {
+
+            res.send(findcourse);
+
+        }
         
-        const findcourse = await Course.find({"courseCode" : code});
-        res.send(findcourse);
     });       
         
     // Get specific MyCourses course
@@ -312,9 +289,36 @@ async function main() {
         // Get the coursecode
         var code = req.params.courseCode;
 
-        const findMycourse = await Mycourse.find({"courseCode" : code});
-        res.send(findMycourse);
-    })
+        const findMycourse = await Mycourse.findOne({"courseCode" : code});
+        const courses = await Course.find();
+        
+        // If coursecode doesnt get an answer send empty json
+        if (findMycourse == null) {
+
+            res.send({});
+
+        } else {
+
+            for (course of courses) {
+            
+                // Gets the course-data to myCourse
+                if (findMycourse.courseCode == course.courseCode) {
+                    
+                    findMycourse["subjectCode"] = course.subjectCode
+                    findMycourse["level"] = course.level;
+                    findMycourse["progression"] = course.progression;
+                    findMycourse["name"] = course.name;
+                    findMycourse["points"] = course.points;
+                    findMycourse["institutionCode"] = course.institutionCode;
+                }
+                
+            }
+            
+            res.send(findMycourse);
+
+        }
+        
+    });
 
     // Get all the subjects
     app.get('/api/subjects', async function(req, res) {
@@ -327,10 +331,20 @@ async function main() {
     app.get('/api/subjects/:subjectCode', async function(req, res) {
 
         // Get the subjectcode
-        var code = req.params.subjectCode;
+        var code = req.params.subjectCode.toUpperCase();        
 
-        const findSubject = await Subject.find({"subjectCode" : code})
-        res.send(findSubject);
+        const findSubject = await Subject.findOne({"subjectCode" : code})
+        // If subjectcode doesnt get an answer send empty json
+        if (findSubject == null) {
+
+            res.send({})
+
+        } else {
+
+            res.send(findSubject);
+
+        }
+        
     });
 
     // Get all grades
@@ -420,6 +434,8 @@ async function main() {
     
 };
 module.exports = main; //TODO:???
+
+
 
 // Get MyCourses
 /** 
@@ -562,7 +578,8 @@ app.get('/api/subjects/:subjectCode', function(req, res) {
     
 })
 
-*/
+
+//TODO:HÄR ÄR JAG!!!!!
 // Add a new MyCourse
 app.post('/api/courses/my', function(req, res) {
               
@@ -695,7 +712,7 @@ app.get('/api/grades', function(req, res) {
 
 });
 
-
+*/
 /**
  * Save JSON file
  */
@@ -728,26 +745,40 @@ function saveFile() {
  * @param {*} course 
  * @returns course
  */
-function setCourseData(course) {
+function getCourseData(mycourses, course) {
     
-    for (miuncourse of miundb.courses) {
+    // for (miuncourse of miundb.courses) {
                 
-        // Compares with coursecode
-        if (course.courseCode == miuncourse.courseCode) {
+    //     // Compares with coursecode
+    //     if (course.courseCode == miuncourse.courseCode) {
             
-            // Adds data from miudb.courses to myCourses            
-            course["subjectCode"] = miuncourse.subjectCode;
-            course["level"] = miuncourse.level;
-            course["progression"] = miuncourse.progression;
-            course["name"] = miuncourse.name;
-            course["points"] = miuncourse.points;
-            course["institutionCode"] = miuncourse.institutionCode;
-        };
+    //         // Adds data from miudb.courses to myCourses            
+    //         course["subjectCode"] = miuncourse.subjectCode;
+    //         course["level"] = miuncourse.level;
+    //         course["progression"] = miuncourse.progression;
+    //         course["name"] = miuncourse.name;
+    //         course["points"] = miuncourse.points;
+    //         course["institutionCode"] = miuncourse.institutionCode;
+    //     };
     
-    };
+    // };
+    
+    for (mycourse of mycourses) {
+
+        if (mycourse.courseCode == course.courseCode) {
+            
+            mycourse["subjectCode"] = course.subjectCode
+            mycourse["level"] = course.level;
+            mycourse["progression"] = course.progression;
+            mycourse["name"] = course.name;
+            mycourse["points"] = course.points;
+            mycourse["institutionCode"] = course.institutionCode;
+
+        }
+    } 
 
     return course;
-
+    
 };
 
 
