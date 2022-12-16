@@ -386,6 +386,7 @@ async function main() {
     // Add a new MyCourse
     app.post('/api/courses/my', async function(req, res) {
 
+        // Getting the params from body
         newCoursecode = req.body.courseCode, 
         newGrade = req.body.grade;
 
@@ -394,13 +395,11 @@ async function main() {
             grade : newGrade
         });
 
-        // Get myCourses
+        // Get myCourses && courses from mongoDB
         const mycourses = await Mycourse.find();
-        const courses = await Course.find();  
-        
-        
+        const courses = await Course.find();       
 
-        // Check if course exist in miun
+        // Check if course exist in mongoDB
         for (course of courses) {
 
             if (newCoursecode == course.courseCode) {
@@ -419,7 +418,7 @@ async function main() {
                 };
                 // If course not in mycourses
                 // Set the data
-                newMyCourse["subjectCode"] = course.subjectCode
+                newMyCourse["subjectCode"] = course.subjectCode //TODO: make a method
                 newMyCourse["level"] = course.level;
                 newMyCourse["progression"] = course.progression;
                 newMyCourse["name"] = course.name;
@@ -437,7 +436,7 @@ async function main() {
             };          
             
         };
-        // If course doesnt exist in miun
+        // If course doesnt exist in mongoDB
         res.status(404).json(
             {error: "Course doesnt exist" }
         );
@@ -445,11 +444,41 @@ async function main() {
 
     });
     
+    // Update a my-course
+    app.put('/api/courses/my/:courseCode', async function(req, res) {
+
+        // Getting the coursecode
+        var code = req.params.courseCode;
+
+        // Getting mycourses from mongoDB
+        const mycourses = await Mycourse.find();
+
+        for (mycourse of mycourses) {
+
+            if (mycourse.courseCode == code) {
+                
+                // Update the grade
+                mycourse.grade = req.body.grade;
+
+                // Set data //TODO: nececerry??
+
+                // Add the course to db
+                await mycourse.save();
+
+                // Send status and return result
+                res.status(200).json(mycourse);                
+                return res.json();
+            }
+        }
+        // If not in mycourses
+        res.status(404).json(
+            {error : "Course doesnt exist in MyCourses"} 
+        );
+        return res.json();
+    });
     
 };
 module.exports = main; //TODO:???
-
-
 
 // Get MyCourses
 /** 

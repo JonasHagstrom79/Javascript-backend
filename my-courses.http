@@ -98,7 +98,7 @@ content-type: application/json
 // Test: Put (update) a my course that exists
 // Expected HTTP response status code: 200
 // Expected response: an object (json) with the updated course
-PUT {{url}}/courses/my/DT005U HTTP/1.1
+PUT {{url}}/courses/my/AK002G HTTP/1.1
 content-type: application/json
 
 {
