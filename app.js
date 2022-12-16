@@ -171,7 +171,12 @@ async function main() {
             required: true,
             ref: 'Course',
             default: -1
-        } //TODO:correct?
+        }, //TODO:correct?
+        subject: {
+            type: String,
+            required: true
+        }
+
         
     });
 
@@ -310,6 +315,7 @@ async function main() {
                     findMycourse["name"] = course.name;
                     findMycourse["points"] = course.points;
                     findMycourse["institutionCode"] = course.institutionCode;
+                    findMycourse["subject"] = course.subject;
                 }
                 
             }
@@ -412,10 +418,10 @@ async function main() {
                         // Add the course
                         
 
-                            //await newMyCourse.save();
+                            await newMyCourse.save();
                             //res.send(newMyCourse);
                             // res.status(201).json();
-                        
+
                             // return res.json(newMyCourse);
 
                        
@@ -781,7 +787,7 @@ function getCourseData(mycourses, course) {
             mycourse["name"] = course.name;
             mycourse["points"] = course.points;
             mycourse["institutionCode"] = course.institutionCode;
-
+            mycourse["subject"] = course.subject;
         }
     } 
 
