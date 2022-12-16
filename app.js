@@ -415,33 +415,25 @@ async function main() {
                         // Return result
                         return res.json();
                     };
-                    // If course not in myCourses
-                    if(newCoursecode != mycourse.courseCode) {
-                        // Add the course
-                        
-                            newMyCourse["subjectCode"] = course.subjectCode
-                            newMyCourse["level"] = course.level;
-                            newMyCourse["progression"] = course.progression;
-                            newMyCourse["name"] = course.name;
-                            newMyCourse["points"] = course.points;
-                            newMyCourse["institutionCode"] = course.institutionCode;
-                            newMyCourse["subject"] = course.subject;
-                            //await db.newMyCourse.save();
-                            //res.send(newMyCourse);
-                            // res.status(201).json();
-
-                            // return res.json(newMyCourse);
-
-                       
-                            
-                       
-                        res.status(201).json( 
-                            {newMyCourse}              
-                        );
-                        // Resturn result
-                        return res.json();
-                    };
+                  
                 };
+                // If course not in mycourses
+                // Set the data
+                newMyCourse["subjectCode"] = course.subjectCode
+                newMyCourse["level"] = course.level;
+                newMyCourse["progression"] = course.progression;
+                newMyCourse["name"] = course.name;
+                newMyCourse["points"] = course.points;
+                newMyCourse["institutionCode"] = course.institutionCode;
+                newMyCourse["subject"] = course.subject;
+                
+                // Add the course to db
+                await newMyCourse.save();
+
+                // Send status and return result
+                res.status(201).json(newMyCourse);                
+                return res.json();
+
             };          
             
         };
