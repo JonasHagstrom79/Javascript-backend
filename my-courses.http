@@ -75,7 +75,7 @@ POST {{url}}/courses/my HTTP/1.1
 content-type: application/json
 
 {
-   "courseCode": "AK001G",
+   "courseCode": "AK002G",
    "grade": "f"
 }
 

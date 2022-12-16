@@ -410,18 +410,19 @@ async function main() {
                     // If course not in myCourses
                     if(newCoursecode != course.courseCode) {
                         // Add the course
-                        try {
+                        
 
-                            await newMyCourse.save();
+                            //await newMyCourse.save();
                             //res.send(newMyCourse);
                             // res.status(201).json();
                         
                             // return res.json(newMyCourse);
 
-                        } catch (error) {
-                            console.error(error.message);
-                        }
-                        res.status(201).json(               
+                       
+                            
+                       
+                        res.status(201).json( 
+                            {error : "Course shall be added"}              
                         );
                         // Resturn result
                         return res.json();
@@ -430,11 +431,11 @@ async function main() {
             };          
             
         };
-        // // If course doesnt exist in miun
-        // res.status(404).json(
-        //     {error: "Course doesnt exist" }
-        // );
-        // return res.json();        
+        // If course doesnt exist in miun
+        res.status(404).json(
+            {error: "Course doesnt exist" }
+        );
+        return res.json();        
 
     });
     
