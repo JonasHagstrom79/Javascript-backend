@@ -396,16 +396,18 @@ async function main() {
 
         // Get myCourses
         const mycourses = await Mycourse.find();
-        const courses = await Course.find();        
+        const courses = await Course.find();  
+        
+        
 
         // Check if course exist in miun
         for (course of courses) {
 
             if (newCoursecode == course.courseCode) {
                 // Continue to myCourses
-                for (course of mycourses) {
+                for (mycourse of mycourses) {
                     // If course already in mycourses
-                    if(newCoursecode == course.courseCode) {
+                    if(newCoursecode == mycourse.courseCode) {
                         // Send error message
                         res.status(409).json(
                             {error : "Course already exist in MyCourses"} 
@@ -414,11 +416,17 @@ async function main() {
                         return res.json();
                     };
                     // If course not in myCourses
-                    if(newCoursecode != course.courseCode) {
+                    if(newCoursecode != mycourse.courseCode) {
                         // Add the course
                         
-
-                            await newMyCourse.save();
+                            newMyCourse["subjectCode"] = course.subjectCode
+                            newMyCourse["level"] = course.level;
+                            newMyCourse["progression"] = course.progression;
+                            newMyCourse["name"] = course.name;
+                            newMyCourse["points"] = course.points;
+                            newMyCourse["institutionCode"] = course.institutionCode;
+                            newMyCourse["subject"] = course.subject;
+                            //await db.newMyCourse.save();
                             //res.send(newMyCourse);
                             // res.status(201).json();
 
@@ -428,7 +436,7 @@ async function main() {
                             
                        
                         res.status(201).json( 
-                            {error : "Course shall be added"}              
+                            {newMyCourse}              
                         );
                         // Resturn result
                         return res.json();
