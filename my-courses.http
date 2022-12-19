@@ -132,7 +132,7 @@ DELETE {{url}}/courses/my/DT000G
 // Expected HTTP response status code: 200
 // Expected response: an object (json) with the deleted course
 // {"courseCode": "DT005U", "grade": "b", ..., "subject": "Datateknik"}
-DELETE {{url}}/courses/my/DT005U
+DELETE {{url}}/courses/my/AK002G
 
 ###############################################
 

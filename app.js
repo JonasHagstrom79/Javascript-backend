@@ -476,6 +476,36 @@ async function main() {
         );
         return res.json();
     });
+
+    // Delete a My-course
+    app.delete('/api/courses/my/:courseCode', async function(req, res) {
+
+        // Get the code for course to be deleted
+        var code = req.params.courseCode;
+
+        // Retrieve the "myCourses" array from the collection
+        const mycourses = await Mycourse.find();
+           
+        // If in myCourses
+        for(var i=0; i<mycourses.length; i++) {
+            if(mycourses[i].courseCode == code) {
+            course = mycourses[i];
+
+            // Remove the course from the array
+            mycourses.splice(i, 1);
+
+            // Update the "myCourses" array in the collection by removing object            
+            await Mycourse.remove({ courseCode : code});             
+            
+            // Send the updated array to the client
+            res.send(mycourses);
+            return res.json();
+            }        
+        }
+        // If not in mycourse
+        res.status(404).json({ error: "Course does not exist in MyCourses" });        
+
+    });
     
 };
 module.exports = main; //TODO:???
