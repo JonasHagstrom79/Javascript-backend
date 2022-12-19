@@ -110,16 +110,7 @@ async function main() {
             type: Array,
             required: true
         }
-    });
-
-    // Creates a schema that defines a institution in the database
-    // const institutionSchema = new mongoose.Schema({
-        
-    //     institutionCode: String,
-    //     institution: String,
-    //     description: String,
-    //     language: String
-    // });
+    });    
 
     // Creates a schema tha defines a myCourse in the database
     const mycourseSchema = new mongoose.Schema({
@@ -161,7 +152,6 @@ async function main() {
 
         
     });
-
     
     // Creates a schema that defines a subject in the database
     const subjectSchema = new mongoose.Schema({
@@ -176,8 +166,7 @@ async function main() {
     
     // Compile to moongoose model
     const Course = mongoose.model('Course', courseSchema);
-    const Grade = mongoose.model('Grade', gradeSchema);
-    //const Institution = mongoose.model('Institution', institutionSchema);
+    const Grade = mongoose.model('Grade', gradeSchema);    
     const Mycourse = mongoose.model('Mycourse', mycourseSchema, 'myCourses'); //Speca 
     const Subject = mongoose.model('Subject', subjectSchema);
 
