@@ -31,15 +31,6 @@ app.listen(port, function() {
     console.log(`Server is running on port ${port}`);
 });
 
-
-// Declaring variables
-// var miundb = [];
-// var course;
-// var miuncourse;
-// var subject;
-// var courses;
-// var myCourse;
-
 /**
  * Call our main function, catch and log errors if they orrur
  */
@@ -69,7 +60,7 @@ async function main() {
 
     // Creates a schema that defines a course in the database
     const courseSchema = new mongoose.Schema({
-        _id: String, //TODO:correct?
+        
         courseCode: {
             type: String,
             required: true,
@@ -107,9 +98,9 @@ async function main() {
 
     });
 
-    // Ceates a schema that defines a grade in the database
+    // Creates a schema that defines a grade in the database
     const gradeSchema = new mongoose.Schema({
-        //_id: _id, //TODO:correct?
+        
         name: {
             type: String,
             required: true,
@@ -124,7 +115,7 @@ async function main() {
 
     // Creates a schema that defines a institution in the database
     const institutionSchema = new mongoose.Schema({
-        //_id: _id, //TODO:correct?
+        
         institutionCode: String,
         institution: String,
         description: String,
@@ -133,77 +124,68 @@ async function main() {
 
     // Creates a schema tha defines a myCourse in the database
     const mycourseSchema = new mongoose.Schema({
-        //_id: String, //TODO:necesarry?
+        
         courseCode: String,
-        grade: String,
+        grade: String
+        ,
         subjectCode: {
             type: String,
-            required: true,
+            //required: true,
             ref: 'Course',
-            default: -1
+            //default: -1
         }, //TODO:correct?
         level: {
             type: String,
-            required: true,
+            //required: true,
             ref: 'Course',
-            default: -1
+            //default: -1
         }, //TODO:correct?
         progression: {
             type: String,
-            required: true,
+            //required: true,
             ref: 'Course',
-            default: -1
+            //default: -1
         }, //TODO:correct?
         name : {
             type: String,
-            required: true,
+            //required: true,
             ref: 'Course',
-            default: -1
+            //default: -1
         }, //TODO:correct?
         points: {
             type: String,
-            required: true,
+            //required: true,
             ref: 'Course',
-            default: -1
+            //default: -1
         }, //TODO:correct?
         institutionCode: {
             type: String,
-            required: true,
+            //required: true,
             ref: 'Course',
-            default: -1
+            //default: -1
         }, //TODO:correct?
         subject: {
             type: String,
-            required: true
+            ref: 'Course',
+            //required: true, //TODO: causes crash when updating grade
+            //default: -1
         }
 
         
     });
 
-    // const mycourseSchema = new mongoose.Schema({
-    //     //_id: String,
-    //     courseCode: String,
-    //     // { 
-    //     //     type: String,
-    //     //     required: true,
-    //     //     uppercase: true,
-    //     //     minLength: 6,
-    //     //     maxLength: 6
-    //     // },
-    //     grade: String
-    // });
-
+    
     // Creates a schema that defines a subject in the database
     const subjectSchema = new mongoose.Schema({
-        //_id: _id, //TODO:correct?
+        
         subjectCode: String,
         subject: String,
         preamble: String,
         bodyText: String,
         language: String
-    });
-    //var myCourses; //TODO:remove!
 
+    });
+    
     // Compile to moongoose model
     const Course = mongoose.model('Course', courseSchema);
     const Grade = mongoose.model('Grade', gradeSchema);
@@ -211,37 +193,13 @@ async function main() {
     const Mycourse = mongoose.model('Mycourse', mycourseSchema, 'myCourses'); //Speca 
     const Subject = mongoose.model('Subject', subjectSchema);
 
-    // Set myCourses data from courses 32:00
-    Mycourse.subjectCode = Course.subjectCode; //TODO:correct?
+    // Set myCourses data from courses 
+    Mycourse.subjectCode = Course.subjectCode;
     Mycourse.level = Course.level;
     Mycourse.progression = Course.progression;
     Mycourse.name = Course.name;
     Mycourse.points = Course.points;
     Mycourse.institutionCode = Course.institutionCode
-
-    // Get MyCourses
-    //const mycourses = await Mycourse.find()//.populate('level');
-    //console.log(mycourses);
-   
-
-    // console.log("Aggregate");
-    // const agg = await Course.aggregate([
-    //     // Filters by points
-    //     {
-    //         $match: {points: 60}
-    //     },
-    //     // Group remaining documents by institutioncode
-    //     {
-    //         $group: {_id: "$name"}
-    //     }//,
-    //     // {
-    //     //     $unwind: '$_id'
-    //     // }
-    // ])
-    // console.log(agg)
-
-
-    
 
     // Get MyCourses
     app.get('/api/courses/my', async function(req, res) {         
@@ -256,8 +214,7 @@ async function main() {
             getCourseData(mycourses, course)
             
         }
-        res.send(mycourses)
-       
+        res.send(mycourses)       
 
     });
 
@@ -272,7 +229,6 @@ async function main() {
 
         // Get the coursecode
         var code = req.params.courseCode;       
-       
 
         const findcourse = await Course.findOne({"courseCode" : code});
         // If coursecode doesnt get an answer send empty json
@@ -294,6 +250,7 @@ async function main() {
         // Get the coursecode
         var code = req.params.courseCode;
 
+        // Gets data from mongoDB
         const findMycourse = await Mycourse.findOne({"courseCode" : code});
         const courses = await Course.find();
         
@@ -309,14 +266,10 @@ async function main() {
                 // Gets the course-data to myCourse
                 if (findMycourse.courseCode == course.courseCode) {
                     
-                    findMycourse["subjectCode"] = course.subjectCode //TODO: Better code?
-                    findMycourse["level"] = course.level;
-                    findMycourse["progression"] = course.progression;
-                    findMycourse["name"] = course.name;
-                    findMycourse["points"] = course.points;
-                    findMycourse["institutionCode"] = course.institutionCode;
-                    findMycourse["subject"] = course.subject;
-                }
+                    // Get the data to be displayed in the result
+                    getCourseData(findMycourse, course);
+
+                };
                 
             }
             
@@ -331,6 +284,7 @@ async function main() {
 
         const subjects = await Subject.find();
         res.send(subjects);
+
     })
 
     // Get a specific subject
@@ -353,35 +307,18 @@ async function main() {
         
     });
 
-    // Get all grades
+    // Get the grades
     app.get('/api/grades', async function(req, res) {
+        
+        const fa = await Grade.findOne({"_id": "638c878dadb06a44d1763ae4"}, {"grades": 1})
+        
+        // Get the grades array from object
+        const grades = fa.grades;
 
-        //const grades = await Grade.find();
-        //const grades = await Grade.find({"grades": ["-","fx","f","e","d","c","b","a"] })
-        const grades = await Grade.find({"grades" : ["-","fx","f","e","d","c","b","a"] })
+        // Send grades        
         res.send(grades);
-    });
-
-    // Get grades ug //TODO:remove!
-    app.get('/api/grades/ug', async function(req, res) {
-
-        const ugGrades = await Grade.find({"name" : "ug"})
-        res.send(ugGrades);
-    })
-
-    // Get grades uvg //TODO:remove!
-    app.get('/api/grades/uvg', async function(req, res) {
-
-        const ugvGrades = await Grade.find({"name" : "uvg"})
-        res.send(ugvGrades);
-    })
-
-    // Get grades fa //TODO:remove!
-    app.get('/api/grades/fa', async function(req, res) {
-
-        const faGrades = await Grade.find({"name" : "fa"})
-        res.send(faGrades);
-    })
+        
+    });    
 
     // Add a new MyCourse
     app.post('/api/courses/my', async function(req, res) {
@@ -417,17 +354,11 @@ async function main() {
                   
                 };
                 // If course not in mycourses
-                // Set the data
-                newMyCourse["subjectCode"] = course.subjectCode //TODO: make a method
-                newMyCourse["level"] = course.level;
-                newMyCourse["progression"] = course.progression;
-                newMyCourse["name"] = course.name;
-                newMyCourse["points"] = course.points;
-                newMyCourse["institutionCode"] = course.institutionCode;
-                newMyCourse["subject"] = course.subject;
-                
                 // Add the course to db
                 await newMyCourse.save();
+
+                // Get the data to be displayed in the result
+                getCourseData(newMyCourse, course);        
 
                 // Send status and return result
                 res.status(201).json(newMyCourse);                
@@ -458,9 +389,7 @@ async function main() {
             if (mycourse.courseCode == code) {
                 
                 // Update the grade
-                mycourse.grade = req.body.grade;
-
-                // Set data //TODO: nececerry??
+                mycourse.grade = req.body.grade;                
 
                 // Add the course to db
                 await mycourse.save();
@@ -483,376 +412,61 @@ async function main() {
         // Get the code for course to be deleted
         var code = req.params.courseCode;
 
-        // Retrieve the "myCourses" array from the collection
+        // Retrieve the "myCourses" and courses array from mogoDB
         const mycourses = await Mycourse.find();
-           
-        // If in myCourses
-        for(var i=0; i<mycourses.length; i++) {
-            if(mycourses[i].courseCode == code) {
-            course = mycourses[i];
+        const courses = await Course.find();
+        
+        for (course of courses) {
 
-            // Remove the course from the array
-            mycourses.splice(i, 1);
+            // If in myCourses
+            for(var i=0; i<mycourses.length; i++) {
 
-            // Update the "myCourses" array in the collection by removing object            
-            await Mycourse.remove({ courseCode : code});             
+                if(mycourses[i].courseCode == code) {
+                    delCourse = mycourses[i];
+
+                    // Remove the course from the array
+                    mycourses.splice(i, 1);
+
+                    // Update the "myCourses" array in the collection by removing object          
+                    await Mycourse.deleteOne({ courseCode: code });
             
-            // Send the updated array to the client
-            res.send(mycourses);
-            return res.json();
-            }        
-        }
+                    // Get the data to be displayed in the result
+                    getCourseData(delCourse, course);
+                             
+                    // Send status and return result
+                    res.send(delCourse);
+                    return res.json();
+                };       
+            };
+           
+        };
         // If not in mycourse
-        res.status(404).json({ error: "Course does not exist in MyCourses" });        
+        res.status(404).json({ error: "Course does not exist in MyCourses" }); 
 
     });
-    
+        
 };
+
 module.exports = main; //TODO:???
 
-// Get MyCourses
-/** 
-app.get('/api/courses/my', function(req, res) {     
-    
-    
-    
-    // Get myCourses from db
-    for (course of miundb.myCourses) {
-
-        // Get all courses
-        for (miuncourse of miundb.courses) {
-            
-            // Compares with coursecode
-            if (course.courseCode == miuncourse.courseCode) {
-                
-                // Sets course-data
-                setCourseData(course);
-
-                // Sets subject
-                setSubject(course);                
-                
-            };
-            
-        };
-    };
-    
-    res.send(miundb.myCourses);
-    
-}); 
-
- 
- // Get the courses from db
-app.get('/api/courses', function(req, res) {
-    
-    // For every course in db
-    for(course of miundb.courses) {
-        
-        // Sets the subject        
-        setSubject(course);       
-        
-    };
-    
-    res.send(miundb.courses);
-    
-}); 
-
-// Get a specific course
-app.get('/api/courses/:courseCode', function(req, res) {
-    
-    // Gets the coursecode
-    var code = req.params.courseCode;
-    
-    // Init JSON object
-    var send = {};
-    
-    // Search miundb for the coursecode
-    for(course of miundb.courses) {
-
-        if (course.courseCode == code.toUpperCase()) {
-            // Getting the subject for the course
-            for(subject of miundb.subjects) {
-                // If subjectcode matches, add the subject to course                
-                setSubject(course);
-                send = course;
-            };
-        // If coursecode doesn´t exist, return empty object
-        } else {
-
-            send;
-        };
-                    
-    };
-    
-    res.send(send);
-    
-});
-
-
-// Get specific MyCourses course
-app.get('/api/courses/my/:courseCode', function(req, res) {
-    
-    var code = req.params.courseCode;
-    var send = {};
-    
-    // Get myCourses from db
-    for (course of miundb.myCourses) {
-
-        // If correct coursecode
-        if (course.courseCode == code.toUpperCase()) {            
-        
-            setCourseData(course);                 
-                        
-            setSubject(course);
-            
-            send = course;
-
-        } else {
-            send
-        };
-    };
-
-    res.send(send);
-
-})
-
-// Get all subjects
-app.get('/api/subjects', function(req, res) {
-
-    res.send(miundb.subjects);
-
-})
-
-// Get a specific subject
-app.get('/api/subjects/:subjectCode', function(req, res) {
-    
-    // Gets the subjectcode
-    var subcode = req.params.subjectCode;
-    
-    // Init JSON object
-    var sending = {};
-
-    // Search miundb for the subjecctcode
-    for(subject of miundb.subjects) {
-
-        if (subject.subjectCode == subcode.toUpperCase()) {
-            // Getting the subject            
-                    sending = subject;                
-           
-        // If subjectcode doesn´t exist, return empty object
-        } else {
-
-            sending;
-
-        };
-                    
-    };
-    
-    res.send(sending);
-    
-})
-
-
-//TODO:HÄR ÄR JAG!!!!!
-// Add a new MyCourse
-app.post('/api/courses/my', function(req, res) {
-              
-    //Create new myCourse
-    var newMyCourse = {        
-        courseCode : req.body.courseCode, 
-        grade : req.body.grade
-    };    
-
-    // Check if course already exist in myCourses
-    for (myCourse of miundb.myCourses) {
-
-        if(newMyCourse.courseCode == myCourse.courseCode) {
-            // Send error message
-            res.status(409).json(
-                {error : "Course already exist in MyCourses"} 
-            );
-            return res.json();
-        }
-    };
-
-    // If course not in myCourses
-    for (courses of miundb.courses) {  
-        // If the course exist in miundb
-        if (newMyCourse.courseCode == courses.courseCode) {
-            // Sets the data           
-            setCourseData(newMyCourse);
-            setSubject(newMyCourse);
-            // Add to array
-            miundb.myCourses.push(newMyCourse);
-            // Save the file
-            saveFile(); 
-            res.status(201).json(newMyCourse);
-            return res.json();
-        } 
-    };
- 
-    for (courses of miundb.courses) {  
-        if (newMyCourse.courseCode != courses.courseCode) {
-             // If not in miundb send error message
-             res.status(404).json(
-                {error: "Course doesnt exist" }
-            );
-            return res.json();
-        };         
-    };    
-   
-});
-
-// Update a My-course
-app.put('/api/courses/my/:courseCode', function(req, res) {
-
-    var code = req.params.courseCode;   
-   
-    for (course of miundb.myCourses) {
-
-         // If in MyCourses
-        if (course.courseCode == code) {
-            // Update grade
-            course.grade = req.body.grade
-            
-            // Sets the data
-            setCourseData(course);
-            setSubject(course);
-
-            //Saves the file
-            saveFile(); 
-
-            // Return MyCourse
-            res.status(200).json(course);
-            return res.json();
-        }        
-        
-    }    
-
-    // If not in myCourse return error msg 404
-    for (course of miundb.myCourses) {
-        
-        if (course.courseCode != code) {
-             res.status(404).json(
-                 {error : "Course doesnt exist in MyCourses"} 
-                );
-            return res.json();
-        };
-    };         
-
-});
-
-// Delete a My-course
-app.delete('/api/courses/my/:courseCode', function(req, res) {
-
-    // Get the code for course to be deleted
-    var code = req.params.courseCode;
-
-    // Get myCourses
-    const myCourses = miundb.myCourses;    
-
-    // If in myCourses
-    for(var i=0; i<myCourses.length; i++) {
-        if(myCourses[i].courseCode == code) {
-            course = myCourses[i];
-
-            // Removes the course
-            myCourses.splice(i, 1);
-
-            // saves the file and return course
-            saveFile();
-            res.status(200).json(course);
-            return res.json();
-        }        
-    }    
-
-    // If not in myCourse return error msg 404
-    for (course of miundb.myCourses) {
-        
-        if (course.courseCode != code) {
-             res.status(404).json(
-                 {error : "Course doesnt exist in MyCourses"} 
-                );
-            return res.json();
-        };
-    }; 
-
-});
-
-// Get all grades
-app.get('/api/grades', function(req, res) {
-
-    res.send(miundb.grades);
-
-});
-
-*/
 /**
- * Save JSON file
+ * 
+ * @param {*} mycourse a mycourse from mongoDB
+ * @param {*} miuncourse a miuncourse from mongoDB
+ * @returns mycourse with course data data from miuncourse
  */
-function saveFile() {
-    jsonfile.writeFile(file, miundb, function(err) {
-        console.log(err);
-    });
-};
+function getCourseData(mycourse, miuncourse) {
 
-/**
- * Get the course subject from miundb
- * @param {*} course 
- * @returns course
- */
- function setSubject(course) {
-    
-    for(subject of miundb.subjects) {
-        
-        // Adds subject to myCourses if correct subjectcode
-        if (subject.subjectCode == course.subjectCode) {
-            course["subject"] = subject.subject;
-        };      
+    mycourse["subjectCode"] = miuncourse.subjectCode
+    mycourse["level"] = miuncourse.level;
+    mycourse["progression"] = miuncourse.progression;
+    mycourse["name"] = miuncourse.name;
+    mycourse["points"] = miuncourse.points;
+    mycourse["institutionCode"] = course.institutionCode;
+    mycourse["subject"] = miuncourse.subject;
 
-    };
-    return course;
-};
-
-/**
- * Get the course data from miundb
- * @param {*} course 
- * @returns course
- */
-function getCourseData(mycourses, course) {
-    
-    // for (miuncourse of miundb.courses) {
-                
-    //     // Compares with coursecode
-    //     if (course.courseCode == miuncourse.courseCode) {
-            
-    //         // Adds data from miudb.courses to myCourses            
-    //         course["subjectCode"] = miuncourse.subjectCode;
-    //         course["level"] = miuncourse.level;
-    //         course["progression"] = miuncourse.progression;
-    //         course["name"] = miuncourse.name;
-    //         course["points"] = miuncourse.points;
-    //         course["institutionCode"] = miuncourse.institutionCode;
-    //     };
-    
-    // };
-    
-    for (mycourse of mycourses) {
-
-        if (mycourse.courseCode == course.courseCode) {
-            
-            mycourse["subjectCode"] = course.subjectCode
-            mycourse["level"] = course.level;
-            mycourse["progression"] = course.progression;
-            mycourse["name"] = course.name;
-            mycourse["points"] = course.points;
-            mycourse["institutionCode"] = course.institutionCode;
-            mycourse["subject"] = course.subject;
-        }
-    } 
-
-    return course;
-    
-};
+    return mycourse
+}
 
 
 
