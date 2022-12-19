@@ -1,7 +1,6 @@
 // Include all needed modules
 const express = require('express');
 const cors = require('cors');
-var jsonfile = require('jsonfile');
 const mongoose = require("mongoose");
 const dotenv = require('dotenv').config(); //To mongoDb
 
@@ -114,13 +113,13 @@ async function main() {
     });
 
     // Creates a schema that defines a institution in the database
-    const institutionSchema = new mongoose.Schema({
+    // const institutionSchema = new mongoose.Schema({
         
-        institutionCode: String,
-        institution: String,
-        description: String,
-        language: String
-    });
+    //     institutionCode: String,
+    //     institution: String,
+    //     description: String,
+    //     language: String
+    // });
 
     // Creates a schema tha defines a myCourse in the database
     const mycourseSchema = new mongoose.Schema({
@@ -129,46 +128,35 @@ async function main() {
         grade: String
         ,
         subjectCode: {
-            type: String,
-            //required: true,
-            ref: 'Course',
-            //default: -1
-        }, //TODO:correct?
+            type: String,            
+            ref: 'Course'            
+        }, 
         level: {
-            type: String,
-            //required: true,
-            ref: 'Course',
-            //default: -1
-        }, //TODO:correct?
+            type: String,            
+            ref: 'Course'            
+        }, 
         progression: {
-            type: String,
-            //required: true,
-            ref: 'Course',
-            //default: -1
-        }, //TODO:correct?
+            type: String,            
+            ref: 'Course'            
+        }, 
         name : {
             type: String,
-            //required: true,
+            required: true,            
             ref: 'Course',
-            //default: -1
-        }, //TODO:correct?
+            default: -1
+            
+        }, 
         points: {
-            type: String,
-            //required: true,
-            ref: 'Course',
-            //default: -1
-        }, //TODO:correct?
+            type: String,            
+            ref: 'Course'            
+        }, 
         institutionCode: {
-            type: String,
-            //required: true,
-            ref: 'Course',
-            //default: -1
-        }, //TODO:correct?
+            type: String,            
+            ref: 'Course'            
+        }, 
         subject: {
             type: String,
-            ref: 'Course',
-            //required: true, //TODO: causes crash when updating grade
-            //default: -1
+            ref: 'Course'            
         }
 
         
@@ -189,7 +177,7 @@ async function main() {
     // Compile to moongoose model
     const Course = mongoose.model('Course', courseSchema);
     const Grade = mongoose.model('Grade', gradeSchema);
-    const Institution = mongoose.model('Institution', institutionSchema);
+    //const Institution = mongoose.model('Institution', institutionSchema);
     const Mycourse = mongoose.model('Mycourse', mycourseSchema, 'myCourses'); //Speca 
     const Subject = mongoose.model('Subject', subjectSchema);
 
@@ -207,14 +195,28 @@ async function main() {
         // Gets data from mongoDB
         const mycourses = await Mycourse.find();
         const courses = await Course.find();
-        
+
+        // Declare variables
+        var course;
+        var mycourse;
+
+        // Compare all miun corses
         for (course of courses) {
             
-            // Gets the course-data to myCourse
-            getCourseData(mycourses, course)
+            // Compare all mycourses            
+            for (mycourse of mycourses) {
+
+                // If coursecode match
+                if (mycourse.courseCode == course.courseCode) {                    
+                    
+                    // Gets the course-data to myCourse
+                    getCourseData(mycourse, course)
+                            
+                };
+            };
             
-        }
-        res.send(mycourses)       
+        };
+        res.send(mycourses);             
 
     });
 
@@ -247,6 +249,9 @@ async function main() {
     // Get specific MyCourses course
     app.get('/api/courses/my/:courseCode', async function(req, res){
 
+        // Define course
+        var course;
+        
         // Get the coursecode
         var code = req.params.courseCode;
 
@@ -324,8 +329,12 @@ async function main() {
     app.post('/api/courses/my', async function(req, res) {
 
         // Getting the params from body
-        newCoursecode = req.body.courseCode, 
-        newGrade = req.body.grade;
+        var newCoursecode = req.body.courseCode; 
+        var newGrade = req.body.grade;
+
+        // Define variables
+        var mycourse;
+        var course;
 
         const newMyCourse = new Mycourse({
             courseCode : newCoursecode,
@@ -381,8 +390,13 @@ async function main() {
         // Getting the coursecode
         var code = req.params.courseCode;
 
-        // Getting mycourses from mongoDB
+        // Define variables
+        var mycourse;
+        var course;
+
+        // Getting mycourses and courses from mongoDB
         const mycourses = await Mycourse.find();
+        const courses = await Course.find();
 
         for (mycourse of mycourses) {
 
@@ -393,6 +407,13 @@ async function main() {
 
                 // Add the course to db
                 await mycourse.save();
+
+                // Get the data to be displayed on mycourse 
+                for (course of courses) {
+
+                    getCourseData(mycourse, course);
+
+                };                
 
                 // Send status and return result
                 res.status(200).json(mycourse);                
@@ -411,6 +432,10 @@ async function main() {
 
         // Get the code for course to be deleted
         var code = req.params.courseCode;
+
+        // Define variables
+        var course;
+        var delCourse;
 
         // Retrieve the "myCourses" and courses array from mogoDB
         const mycourses = await Mycourse.find();
@@ -447,7 +472,7 @@ async function main() {
         
 };
 
-module.exports = main; //TODO:???
+//module.exports = main; //TODO:???
 
 /**
  * 
@@ -462,11 +487,8 @@ function getCourseData(mycourse, miuncourse) {
     mycourse["progression"] = miuncourse.progression;
     mycourse["name"] = miuncourse.name;
     mycourse["points"] = miuncourse.points;
-    mycourse["institutionCode"] = course.institutionCode;
+    mycourse["institutionCode"] = miuncourse.institutionCode;
     mycourse["subject"] = miuncourse.subject;
 
     return mycourse
 }
-
-
-
