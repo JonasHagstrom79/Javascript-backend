@@ -1,12 +1,10 @@
 // Include all needed modules
+/*global require, */
+/*eslint no-unused-vars: 0*/
 const express = require('express');
 const cors = require('cors');
 const mongoose = require("mongoose");
-const dotenv = require('dotenv').config(); //To mongoDb
-
-// // Connect to moongoose
-// const connectionString = process.env.DB_SERVER;
-// await mongoose.connect(connectionString) //TODO:test if it works
+const dotenv = require('dotenv').config(); 
 
 // Create an Express application
 const app = express();
@@ -231,7 +229,7 @@ async function main() {
 
             res.send(findcourse);
 
-        }
+        };
         
     });       
         
@@ -265,11 +263,11 @@ async function main() {
 
                 };
                 
-            }
+            };
             
             res.send(findMycourse);
 
-        }
+        };
         
     });
 
@@ -297,7 +295,7 @@ async function main() {
 
             res.send(findSubject);
 
-        }
+        };
         
     });
 
@@ -461,8 +459,6 @@ async function main() {
         
 };
 
-//module.exports = main; //TODO:???
-
 /**
  * 
  * @param {*} mycourse a mycourse from mongoDB
@@ -479,5 +475,5 @@ function getCourseData(mycourse, miuncourse) {
     mycourse["institutionCode"] = miuncourse.institutionCode;
     mycourse["subject"] = miuncourse.subject;
 
-    return mycourse
+    return mycourse;
 }
