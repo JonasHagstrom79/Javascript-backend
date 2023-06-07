@@ -452,7 +452,7 @@ async function main() {
             };
            
         };
-        // If not in mycourse
+        // If not in mycourse send error message
         res.status(404).json({ error: "Course does not exist in MyCourses" }); 
 
     });
